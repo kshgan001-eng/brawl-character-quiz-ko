@@ -1,1 +1,124 @@
-<!doctype html><meta charset="utf-8"><title>브롤스타즈 모든 브롤러 말할 수 있을까?</title><script>fetch('./index.html').then(r=>r.text()).then(()=>location.replace('./index.html'));</script>
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#24164b" />
+<title>브롤스타즈 모든 브롤러 말할 수 있을까?</title>
+<style>
+  :root{--ink:#101014;--panel:rgba(255,255,255,.94);--shadow:0 10px 30px rgba(0,0,0,.24)}
+  *{box-sizing:border-box}
+  html,body{min-height:100%}
+  body{margin:0;color:var(--ink);font-family:Arial,"Apple SD Gothic Neo","Noto Sans KR",sans-serif;background:#5f3cac url("https://nyar44.github.io/brawl-character-quiz/images/background.jpg") center/cover fixed no-repeat;overflow-x:hidden}
+  button,input{font:inherit}
+  .wrap{width:min(1180px,100%);margin:0 auto;padding:14px 12px 24px}
+  .title{text-align:center;margin:6px 0 14px;font-family:Impact,"Arial Black","Apple SD Gothic Neo",sans-serif;font-size:36px;font-weight:900;letter-spacing:-.5px;color:#fff;text-shadow:0 3px 0 #24164b,0 5px 12px rgba(0,0,0,.45)}
+  .game-bar{display:flex;align-items:center;justify-content:center;gap:10px;width:max-content;max-width:100%;margin:0 auto 16px;padding:11px 14px;background:var(--panel);border:2px solid rgba(0,0,0,.12);border-radius:16px;box-shadow:var(--shadow)}
+  #answer{width:300px;height:44px;padding:0 12px;border:2px solid #333;border-radius:8px;font-size:18px;outline:none}
+  #answer:focus{border-color:#6a3fd0;box-shadow:0 0 0 3px rgba(106,63,208,.16)}
+  .action{height:44px;padding:0 17px;border:2px solid #171717;border-radius:9px;font-weight:800;cursor:pointer;background:#fff}
+  .answer-btn{background:#ffcf23}
+  #giveUpButton{background:#9b111e;color:#fff;border-color:#670711}
+  .game-info{font-size:15px;font-weight:900;white-space:nowrap}
+  .character-grid{display:grid;grid-template-columns:repeat(15,65px);gap:6px;justify-content:center;margin:0 auto 20px}
+  .character{width:65px;height:80px;position:relative;overflow:hidden;background:#1b1b1f;border:3px solid #888;border-radius:3px;box-shadow:0 2px 5px rgba(0,0,0,.24)}
+  .character img{width:100%;height:100%;display:block;object-fit:cover}
+  .character.answered{display:grid;grid-template-rows:minmax(0,1fr) 15px}
+  .character.answered img{width:100%;height:100%;object-fit:cover;min-height:0}
+  .character-name{display:block;height:15px;line-height:15px;text-align:center;background:rgba(0,0,0,.9);color:#fff;font-size:8px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:clip;padding:0 1px}
+  .number{position:absolute;top:2px;left:3px;z-index:5;color:#fff;font-size:10px;font-weight:900;text-shadow:1px 1px 3px #000}
+  .starter{border-color:#9e9e9e}.rare{border-color:#32cd32}.superrare{border-color:#00aaff}.epic{border-color:#b84cff}.mythic{border-color:#ff3b3b}.legendary{border-color:#ffd700}.ultralegendary{border-color:#ff69d4}
+  .sound-setting{position:fixed;top:9px;right:10px;z-index:20;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 8px;border-radius:10px;background:rgba(20,15,35,.72);backdrop-filter:blur(7px)}
+  .sound-title{font-size:12px;font-weight:900;color:#efff29}.sound-toggle{display:flex}.sound-btn{width:38px;height:24px;padding:0;border:1px solid #222;background:#555;color:#fff;font-size:10px;font-weight:900;cursor:pointer}.sound-btn:first-child{border-radius:6px 0 0 6px}.sound-btn:last-child{border-radius:0 6px 6px 0}.sound-btn.active.on{background:#08bb33}.sound-btn.active.off{background:#d91f1f}
+  .modal-backdrop{position:fixed;inset:0;z-index:9998;background:rgba(0,0,0,.45);display:none}.modal-backdrop.show{display:block}
+  .modal{position:fixed;top:50%;left:50%;z-index:9999;transform:translate(-50%,-50%);width:420px;max-width:calc(100vw - 32px);padding:26px;background:#fff;border:4px solid #111;border-radius:20px;box-shadow:0 18px 45px rgba(0,0,0,.4);text-align:center;display:none}.modal.show{display:block}
+  .modal .big{font-size:36px;font-weight:950}.modal .time-row{margin-top:12px;font-size:22px;font-weight:900}.modal .time{color:#1eaf48;font-size:31px}.modal .comment{margin:17px 0 20px;font-size:16px;font-weight:800}.modal.giveup .big{color:#ce1111}.modal .buttons{display:flex;justify-content:center;gap:10px}.modal .buttons button{min-width:90px;height:40px;padding:0 15px;border:2px solid #111;border-radius:9px;font-size:13px;font-weight:900;cursor:pointer}.close-btn{background:#e53935;color:#fff}.share-btn{background:#000;color:#fff}.restart-btn{background:#2cb34a;color:#fff}
+  .toast{position:fixed;left:50%;bottom:28px;z-index:10000;transform:translate(-50%,18px);opacity:0;pointer-events:none;background:rgba(15,15,20,.92);color:#fff;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:800;transition:.18s ease}.toast.show{opacity:1;transform:translate(-50%,0)}
+  .disclaimer{width:min(900px,calc(100% - 24px));margin:18px auto 0;padding:12px 15px;border-radius:12px;background:rgba(255,255,255,.82);text-align:center;font-size:11px;line-height:1.55}.disclaimer a{color:#34217a;font-weight:900}
+  .credit{display:block;margin-top:4px;opacity:.72}
+  @media(max-width:900px){.game-bar{gap:6px;padding:7px 8px}.game-info{font-size:11px}#answer{width:240px;height:38px;font-size:15px}.action{height:38px;padding:0 10px;font-size:12px}.character-grid{grid-template-columns:repeat(10,minmax(0,1fr));width:100%;gap:4px}.character{width:100%;height:auto;aspect-ratio:65/80}.title{font-size:27px}}
+  @media(max-width:600px){.wrap{padding:8px 4px 18px}.title{font-size:20px;margin:4px 0 8px;white-space:nowrap}.game-bar{width:calc(100% - 4px);display:grid;grid-template-columns:minmax(0,1.55fr) auto auto;grid-template-rows:auto auto;margin-bottom:7px;padding:6px;gap:5px 4px;border-radius:11px}#answer{width:100%;height:34px;font-size:14px}.action{height:34px;padding:0 8px;font-size:10px}.game-info{grid-row:2;font-size:9px}.game-info.timer{grid-column:1}.game-info.counter{grid-column:2/4;text-align:right}.character-grid{grid-template-columns:repeat(10,calc((100vw - 31px)/10));gap:3px;justify-content:start;margin:0}.character{border-width:2px;border-radius:2px;aspect-ratio:70/76}.character.answered{grid-template-rows:minmax(0,1fr) 10px}.character-name{height:10px;line-height:10px;font-size:6px}.number{top:1px;left:1px;font-size:7px}.sound-setting{top:auto;right:7px;bottom:8px;padding:4px 5px}.sound-title{font-size:8px}.sound-btn{width:25px;height:18px;font-size:8px}.modal{padding:22px 15px}.modal .big{font-size:29px}.modal .time-row{font-size:18px}.modal .time{font-size:27px}.modal .comment{font-size:12px}.modal .buttons{gap:6px}.modal .buttons button{min-width:0;flex:1;padding:0 6px;font-size:10px}.disclaimer{font-size:9px;margin-top:14px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1 class="title">＜브롤스타즈 모든 브롤러 말할 수 있을까?＞</h1>
+  <div class="game-bar">
+    <input id="answer" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="브롤러 이름 입력" aria-label="브롤러 이름" />
+    <button class="action answer-btn" id="answerButton" type="button">정답</button>
+    <button class="action" id="giveUpButton" type="button">포기</button>
+    <div class="game-info timer">⏱ <span id="timer">00:00</span></div>
+    <div class="game-info counter">정답 <span id="count">0</span> / 106 · 남은 브롤러 <span id="remaining">106</span></div>
+  </div>
+  <main class="character-grid" id="characterGrid" aria-label="브롤러 목록"></main>
+</div>
+
+<div class="sound-setting" aria-label="효과음 설정">
+  <div class="sound-title">효과음</div>
+  <div class="sound-toggle"><button class="sound-btn on active" id="soundOnBtn" type="button">켜기</button><button class="sound-btn off" id="soundOffBtn" type="button">끄기</button></div>
+</div>
+
+<div class="modal-backdrop" id="backdrop"></div>
+<section class="modal" id="clearModal" role="dialog" aria-modal="true" aria-label="클리어 결과">
+  <div class="big">106 / 106</div>
+  <div class="time-row">클리어 타임: <span class="time" id="clearTime">00:00</span></div>
+  <div class="comment" id="clearComment">브롤러 지식만큼은 프로급!</div>
+  <div class="buttons"><button class="close-btn" data-close>닫기</button><button class="share-btn" data-share>X에 공유</button><button class="restart-btn" data-restart>다시 하기</button></div>
+</section>
+<section class="modal giveup" id="giveUpModal" role="dialog" aria-modal="true" aria-label="포기 결과">
+  <div class="big">포기</div>
+  <div class="time-row">정답: <span id="giveUpCount">0</span> / 106</div>
+  <div class="time-row">시간: <span class="time" id="giveUpTime">00:00</span></div>
+  <div class="comment" id="giveUpComment">다음엔 더 많이 맞힐 수 있어요!</div>
+  <div class="buttons"><button class="close-btn" data-close>닫기</button><button class="share-btn" data-share>X에 공유</button><button class="restart-btn" data-restart>다시 하기</button></div>
+</section>
+<div class="toast" id="toast"></div>
+
+<footer class="disclaimer">
+  이 콘텐츠는 비공식 팬 콘텐츠이며 Supercell의 승인 또는 후원을 받지 않았습니다. 자세한 내용은 Supercell 팬 콘텐츠 정책을 확인하세요.
+  <span class="credit">한국어판: 원작 <a href="https://nyar44.github.io/brawl-character-quiz/" target="_blank" rel="noopener">nyar44의 브롤러 퀴즈</a>를 참고해 제작 · 이미지/효과음은 원작 공개 사이트 자산을 불러옵니다.</span>
+</footer>
+
+<script>
+const ASSET_BASE = "https://nyar44.github.io/brawl-character-quiz/";
+const BRAWLERS = [{"number": 1, "name": "쉘리", "id": "shelly", "aliases": ["Shelly"]}, {"number": 2, "name": "니타", "id": "nita", "aliases": ["Nita"]}, {"number": 3, "name": "콜트", "id": "colt", "aliases": ["Colt"]}, {"number": 4, "name": "불", "id": "bull", "aliases": ["Bull"]}, {"number": 5, "name": "브록", "id": "brock", "aliases": ["Brock", "브로크"]}, {"number": 6, "name": "엘 프리모", "id": "elprimo", "aliases": ["El Primo", "엘프리모"]}, {"number": 7, "name": "발리", "id": "barley", "aliases": ["Barley"]}, {"number": 8, "name": "포코", "id": "poco", "aliases": ["Poco"]}, {"number": 9, "name": "로사", "id": "rosa", "aliases": ["Rosa"]}, {"number": 10, "name": "제시", "id": "jessie", "aliases": ["Jessie", "Jesse"]}, {"number": 11, "name": "다이너마이크", "id": "dynamike", "aliases": ["Dynamike", "다이나마이크"]}, {"number": 12, "name": "틱", "id": "tick", "aliases": ["Tick"]}, {"number": 13, "name": "8비트", "id": "8bit", "aliases": ["8-Bit", "8 Bit", "에이트비트"]}, {"number": 14, "name": "리코", "id": "rico", "aliases": ["Rico"]}, {"number": 15, "name": "대릴", "id": "darryl", "aliases": ["Darryl", "다릴"]}, {"number": 16, "name": "페니", "id": "penny", "aliases": ["Penny"]}, {"number": 17, "name": "칼", "id": "carl", "aliases": ["Carl"]}, {"number": 18, "name": "재키", "id": "jacky", "aliases": ["Jacky", "Jackie"]}, {"number": 19, "name": "거스", "id": "gus", "aliases": ["Gus"]}, {"number": 20, "name": "보", "id": "bo", "aliases": ["Bo"]}, {"number": 21, "name": "엠즈", "id": "emz", "aliases": ["Emz", "EMZ"]}, {"number": 22, "name": "스튜", "id": "stu", "aliases": ["Stu"]}, {"number": 23, "name": "파이퍼", "id": "piper", "aliases": ["Piper"]}, {"number": 24, "name": "팸", "id": "pam", "aliases": ["Pam", "팜"]}, {"number": 25, "name": "프랭크", "id": "frank", "aliases": ["Frank"]}, {"number": 26, "name": "비비", "id": "bibi", "aliases": ["Bibi"]}, {"number": 27, "name": "비", "id": "bea", "aliases": ["Bea"]}, {"number": 28, "name": "나니", "id": "nani", "aliases": ["Nani"]}, {"number": 29, "name": "에드거", "id": "edgar", "aliases": ["Edgar"]}, {"number": 30, "name": "그리프", "id": "griff", "aliases": ["Griff"]}, {"number": 31, "name": "그롬", "id": "grom", "aliases": ["Grom"]}, {"number": 32, "name": "보니", "id": "bonnie", "aliases": ["Bonnie"]}, {"number": 33, "name": "게일", "id": "gale", "aliases": ["Gale"]}, {"number": 34, "name": "콜레트", "id": "colette", "aliases": ["Colette", "콜렛"]}, {"number": 35, "name": "벨", "id": "belle", "aliases": ["Belle"]}, {"number": 36, "name": "애쉬", "id": "ash", "aliases": ["Ash"]}, {"number": 37, "name": "롤라", "id": "lola", "aliases": ["Lola"]}, {"number": 38, "name": "샘", "id": "sam", "aliases": ["Sam"]}, {"number": 39, "name": "맨디", "id": "mandy", "aliases": ["Mandy"]}, {"number": 40, "name": "메이지", "id": "maisie", "aliases": ["Maisie"]}, {"number": 41, "name": "행크", "id": "hank", "aliases": ["Hank"]}, {"number": 42, "name": "펄", "id": "pearl", "aliases": ["Pearl"]}, {"number": 43, "name": "래리 & 로리", "id": "larrylawrie", "aliases": ["Larry & Lawrie", "Larry and Lawrie", "래리앤로리", "래리와로리", "래리 로리"]}, {"number": 44, "name": "안젤로", "id": "angelo", "aliases": ["Angelo"]}, {"number": 45, "name": "베리", "id": "berry", "aliases": ["Berry"]}, {"number": 46, "name": "셰이드", "id": "shade", "aliases": ["Shade", "쉐이드"]}, {"number": 47, "name": "미플", "id": "meeple", "aliases": ["Meeple"]}, {"number": 48, "name": "트렁크", "id": "trunk", "aliases": ["Trunk"]}, {"number": 49, "name": "볼트", "id": "bolt", "aliases": ["Bolt"]}, {"number": 50, "name": "모티스", "id": "mortis", "aliases": ["Mortis"]}, {"number": 51, "name": "타라", "id": "tara", "aliases": ["Tara"]}, {"number": 52, "name": "진", "id": "gene", "aliases": ["Gene"]}, {"number": 53, "name": "맥스", "id": "max", "aliases": ["Max", "MAX"]}, {"number": 54, "name": "미스터 P", "id": "mrp", "aliases": ["Mr. P", "Mr P", "Mister P", "미스터피"]}, {"number": 55, "name": "스프라우트", "id": "sprout", "aliases": ["Sprout"]}, {"number": 56, "name": "바이런", "id": "byron", "aliases": ["Byron"]}, {"number": 57, "name": "스퀴크", "id": "squeak", "aliases": ["Squeak"]}, {"number": 58, "name": "루", "id": "lou", "aliases": ["Lou"]}, {"number": 59, "name": "러프스", "id": "ruffs", "aliases": ["Ruffs"]}, {"number": 60, "name": "버즈", "id": "buzz", "aliases": ["Buzz"]}, {"number": 61, "name": "팽", "id": "fang", "aliases": ["Fang", "팡"]}, {"number": 62, "name": "이브", "id": "eve", "aliases": ["Eve"]}, {"number": 63, "name": "자넷", "id": "janet", "aliases": ["Janet", "재넷"]}, {"number": 64, "name": "오티스", "id": "otis", "aliases": ["Otis"]}, {"number": 65, "name": "버스터", "id": "buster", "aliases": ["Buster"]}, {"number": 66, "name": "그레이", "id": "gray", "aliases": ["Gray", "Grey"]}, {"number": 67, "name": "R-T", "id": "rt", "aliases": ["RT", "R T", "알티", "알 티"]}, {"number": 68, "name": "윌로우", "id": "willow", "aliases": ["Willow"]}, {"number": 69, "name": "더그", "id": "doug", "aliases": ["Doug"]}, {"number": 70, "name": "척", "id": "chuck", "aliases": ["Chuck"]}, {"number": 71, "name": "찰리", "id": "charlie", "aliases": ["Charlie"]}, {"number": 72, "name": "미코", "id": "mico", "aliases": ["Mico"]}, {"number": 73, "name": "멜로디", "id": "melodie", "aliases": ["Melodie", "Melody"]}, {"number": 74, "name": "릴리", "id": "lily", "aliases": ["Lily"]}, {"number": 75, "name": "클랜시", "id": "clancy", "aliases": ["Clancy"]}, {"number": 76, "name": "모", "id": "moe", "aliases": ["Moe"]}, {"number": 77, "name": "주주", "id": "juju", "aliases": ["Juju"]}, {"number": 78, "name": "올리", "id": "ollie", "aliases": ["Ollie"]}, {"number": 79, "name": "루미", "id": "lumi", "aliases": ["Lumi"]}, {"number": 80, "name": "핑크스", "id": "finx", "aliases": ["Finx", "핀스", "핑스"]}, {"number": 81, "name": "재용", "id": "jaeyong", "aliases": ["Jae-Yong", "Jaeyong", "Jae Yong", "재영"]}, {"number": 82, "name": "알리", "id": "alli", "aliases": ["Alli", "앨리"]}, {"number": 83, "name": "미나", "id": "mina", "aliases": ["Mina"]}, {"number": 84, "name": "지기", "id": "ziggy", "aliases": ["Ziggy"]}, {"number": 85, "name": "지지", "id": "gigi", "aliases": ["Gigi"]}, {"number": 86, "name": "나지아", "id": "najia", "aliases": ["Najia"]}, {"number": 87, "name": "글로이", "id": "glowy", "aliases": ["Glowy", "글로위"]}, {"number": 88, "name": "스타 노바", "id": "starrnova", "aliases": ["Starr Nova", "StarrNova", "스타노바"]}, {"number": 89, "name": "데미안", "id": "damian", "aliases": ["Damian", "다미안"]}, {"number": 90, "name": "웬디", "id": "wendy", "aliases": ["Wendy"]}, {"number": 91, "name": "스파이크", "id": "spike", "aliases": ["Spike"]}, {"number": 92, "name": "크로우", "id": "crow", "aliases": ["Crow"]}, {"number": 93, "name": "레온", "id": "leon", "aliases": ["Leon"]}, {"number": 94, "name": "샌디", "id": "sandy", "aliases": ["Sandy"]}, {"number": 95, "name": "앰버", "id": "amber", "aliases": ["Amber", "엠버"]}, {"number": 96, "name": "메그", "id": "meg", "aliases": ["Meg"]}, {"number": 97, "name": "서지", "id": "surge", "aliases": ["Surge"]}, {"number": 98, "name": "체스터", "id": "chester", "aliases": ["Chester"]}, {"number": 99, "name": "코델리우스", "id": "cordelius", "aliases": ["Cordelius"]}, {"number": 100, "name": "키트", "id": "kit", "aliases": ["Kit"]}, {"number": 101, "name": "드라코", "id": "draco", "aliases": ["Draco"]}, {"number": 102, "name": "켄지", "id": "kenji", "aliases": ["Kenji"]}, {"number": 103, "name": "노리", "id": "nori", "aliases": ["Nori"]}, {"number": 104, "name": "피어스", "id": "pierce", "aliases": ["Pierce"]}, {"number": 105, "name": "카제", "id": "kaze", "aliases": ["Kaze"]}, {"number": 106, "name": "시리우스", "id": "sirius", "aliases": ["Sirius"]}];
+const TOTAL = BRAWLERS.length;
+const grid = document.getElementById('characterGrid');
+const input = document.getElementById('answer');
+const answerButton = document.getElementById('answerButton');
+const giveUpButton = document.getElementById('giveUpButton');
+const answered = new Set();
+let seconds = 0, timerId = null, timerStarted = false, finished = false, soundEnabled = true;
+
+function rarityClass(n){if(n===1)return 'starter';if(n<=9)return 'rare';if(n<=19)return 'superrare';if(n<=49)return 'epic';if(n<=90)return 'mythic';if(n<=104)return 'legendary';return 'ultralegendary'}
+function imgUrl(id){return `${ASSET_BASE}images/${id}.jpg`}
+function normalizeName(v){return v.trim().toLowerCase().normalize('NFKC').replace(/[\s·・.ㆍ_\-&＆/\\]/g,'')}
+function allKeys(b){return [b.name,b.id,...(b.aliases||[])].map(normalizeName)}
+const lookup = new Map(); BRAWLERS.forEach(b=>allKeys(b).forEach(k=>lookup.set(k,b)));
+
+function renderGrid(){
+  grid.innerHTML='';
+  BRAWLERS.forEach(b=>{const el=document.createElement('div');el.className=`character ${rarityClass(b.number)}`;el.dataset.number=b.number;el.innerHTML=`<span class="number">${String(b.number).padStart(3,'0')}</span><img src="${ASSET_BASE}images/question.jpg.png" alt="미공개 브롤러 ${b.number}">`;grid.appendChild(el)})
+}
+function formatTime(){const m=Math.floor(seconds/60),s=seconds%60;return `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`}
+function startTimer(){if(timerStarted||finished)return;timerStarted=true;timerId=setInterval(()=>{seconds++;document.getElementById('timer').textContent=formatTime()},1000)}
+function stopTimer(){if(timerId)clearInterval(timerId);timerId=null}
+function play(path){if(!soundEnabled)return;try{const a=new Audio(`${ASSET_BASE}sounds/${path}`);a.volume=.75;a.play().catch(()=>{})}catch(e){}}
+function reveal(b,dim=false){const box=grid.querySelector(`.character[data-number="${b.number}"]`);if(!box)return;box.classList.add('answered');const img=box.querySelector('img');img.src=imgUrl(b.id);img.alt=b.name;img.style.filter=dim?'grayscale(100%)':'';img.style.opacity=dim?'.52':'1';let label=box.querySelector('.character-name');if(!label){label=document.createElement('div');label.className='character-name';box.appendChild(label)}label.textContent=b.name}
+function updateCount(){document.getElementById('count').textContent=answered.size;document.getElementById('remaining').textContent=TOTAL-answered.size}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('show'),1100)}
+function checkAnswer(){if(finished)return;const raw=input.value;input.value='';const key=normalizeName(raw);if(!key)return;const b=lookup.get(key);if(!b){play('%E5%A4%B1%E6%95%97.mp3');toast('등록된 브롤러가 아니에요');return}if(answered.has(b.number)){play('%E3%83%9F%E3%82%B9.mp3');toast('이미 맞힌 브롤러예요');return}answered.add(b.number);if(answered.size===1)startTimer();reveal(b);updateCount();play('%E3%83%94%E3%83%83%E3%82%AF%E9%9F%B3.mp3');if(answered.size===TOTAL)completeGame()}
+function completeGame(){finished=true;stopTimer();input.disabled=true;answerButton.disabled=true;giveUpButton.disabled=true;document.getElementById('clearTime').textContent=formatTime();const comments=['브롤러 지식만큼은 프로급!','106명을 전부 기억했다고? 대단해요.','이 정도면 브롤스타즈 도감 그 자체!','완벽 클리어! 정말 빠짐없이 맞혔네요.','브롤러 이름 시험 만점!'];document.getElementById('clearComment').textContent=comments[Math.floor(Math.random()*comments.length)];openModal('clearModal')}
+function giveUp(){if(finished)return;finished=true;stopTimer();BRAWLERS.forEach(b=>reveal(b,!answered.has(b.number)));input.disabled=true;answerButton.disabled=true;giveUpButton.disabled=true;document.getElementById('giveUpCount').textContent=answered.size;document.getElementById('giveUpTime').textContent=formatTime();const comments=['다음엔 더 많이 맞힐 수 있어요!','여기까지 기억한 것도 충분히 좋아요.','놓친 브롤러를 확인하고 한 번 더 도전!','이번 기록을 기억해 두고 다시 도전해 보세요.'];document.getElementById('giveUpComment').textContent=comments[Math.floor(Math.random()*comments.length)];openModal('giveUpModal')}
+function confirmGiveUp(){if(finished)return;if(confirm('정말 포기할까요? 남은 브롤러의 정답이 모두 공개됩니다.'))giveUp()}
+function openModal(id){document.getElementById('backdrop').classList.add('show');document.getElementById(id).classList.add('show')}
+function closeModals(){document.getElementById('backdrop').classList.remove('show');document.querySelectorAll('.modal.show').forEach(x=>x.classList.remove('show'))}
+function shareToX(){const text=`브롤스타즈 모든 브롤러 말할 수 있을까?\n${answered.size} / ${TOTAL}명 정답!\n시간: ${formatTime()}\n#브롤스타즈 #브롤러퀴즈`;window.open('https://twitter.com/intent/tweet?text='+encodeURIComponent(text)+'&url='+encodeURIComponent('https://naver.me/xLNkDqy6'),'_blank','noopener')}
+function restartGame(){location.reload()}
+
+answerButton.addEventListener('click',checkAnswer);giveUpButton.addEventListener('click',confirmGiveUp);input.addEventListener('keydown',e=>{if(e.key==='Enter')checkAnswer()});document.getElementById('backdrop').addEventListener('click',closeModals);document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',closeModals));document.querySelectorAll('[data-share]').forEach(b=>b.addEventListener('click',shareToX));document.querySelectorAll('[data-restart]').forEach(b=>b.addEventListener('click',restartGame));
+const soundOnBtn=document.getElementById('soundOnBtn'),soundOffBtn=document.getElementById('soundOffBtn');function updateSound(){soundOnBtn.classList.toggle('active',soundEnabled);soundOffBtn.classList.toggle('active',!soundEnabled)}soundOnBtn.addEventListener('click',()=>{soundEnabled=true;updateSound()});soundOffBtn.addEventListener('click',()=>{soundEnabled=false;updateSound()});
+renderGrid();updateCount();updateSound();input.focus();
+</script>
+</body>
+</html>
